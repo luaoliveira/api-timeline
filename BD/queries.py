@@ -2,11 +2,32 @@ from flask import Flask, request
 import sqlite3
 from datetime import datetime
 import json 
+import pandas as pd
 
 database = sqlite3.connect('data.db')
 cursor = database.cursor()
 
-def get_data(startDate, endDate=None, Type=None, Grouping=None, attr1=None, attr2=None, attr3=None, attr4=None):
+def all_brands():
+
+    cursor.execute("SELECT DISTINCT brand FROM sales ORDER BY brand")
+    return [brand[0] for brand in cursor.fetchall()]
+
+def all_asins():
+
+    cursor.execute("SELECT DISTINCT asin FROM sales ORDER BY asin")
+    return [asin[0] for asin in cursor.fetchall()]
+
+def all_sources():
+
+    cursor.execute("SELECT DISTINCT source FROM sales ORDER BY source")
+    return [source[0] for source in cursor.fetchall()]
+
+def all_stars():
+
+    cursor.execute("SELECT DISTINCT stars FROM sales ORDER BY stars")
+    return [stars[0] for stars in cursor.fetchall()]
+
+def get_data(startDate=None, endDate=None, Type=None, Grouping=None, att1=None, att2=None, att3=None, att4=None):
 
     options_type = {
         'weekly': '%W',
@@ -14,27 +35,38 @@ def get_data(startDate, endDate=None, Type=None, Grouping=None, attr1=None, attr
         'bi-weekly': '%W'
     }
 
-    Type=options_type[Type]
+    attrs = {
+        'asin': att1,
+        'brand':att2,
+        'source':att3,
+        'stars': att4
+    }
 
-    attributes = [attr1,attr2,attr3,attr4]
-    
-    # Generates list of attributes to be retrieved from database
-    colunas =""
-    for i in range(len(attributes)):
+    def get_condition():
+
+        condition = "WHERE " if any(attrs.values()) else ""
+        rest = ""
+        for att, value in attrs.items():
         
-        if attributes[i] is not None:
-            colunas+=attributes[i]
-            colunas+=","
+            if value != None:
 
+                if (rest):
+                    rest+= "AND "
+                rest+= att + " = '" + value + "' "
 
-    #cursor.execute("SELECT "+colunas+", COUNT(*) AS nRecords FROM sales WHERE date(timestamp) \
-                    #BETWEEN date('"+startDate+"') AND date('2020-04-01') \
-                    #GROUP by strftime("+Type+", timestamp)")
+        if startDate != None:
 
-    cursor.execute("SELECT date(timestamp),"+colunas+" COUNT(*) AS nRecords FROM sales WHERE date(timestamp) \
-                    BETWEEN date('"+startDate+"', 'weekday 2') AND date('2020-04-01') \
-                    GROUP by strftime('"+Type+"', timestamp)")
+            rest+= "AND date(timestamp) >= '" + startDate + "' "
 
-    print(cursor.fetchall())
+        if endDate != None:
 
-get_data('2020-01-01', Type='weekly')
+            rest+= " AND date(timestamp) <= '" + endDate + "' "
+
+        print(condition + rest)
+        return (condition + rest)
+
+    df = pd.read_sql_query("SELECT timestamp FROM sales " + get_condition() + " ORDER BY date(timestamp)", database)
+
+    print(df['timestamp'])
+
+get_data(att2='Downy', att4 = '3', startDate='2020-01-01', endDate='2020-12-01')

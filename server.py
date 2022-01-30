@@ -4,24 +4,28 @@ from distutils.log import debug
 from flask import Flask, request
 import pandas as pd
 import json
+import BD.queries as queries
+
+
+Type = ['cumulative', 'usual']
+Grouping = ['weekly', 'bi-weekly', 'monthly']
 
 info = [
     
             {
                 "Parameters": {
 
-                    "startDate": "Initial date to show the visualization",
-                    "endDate": " Final date to show in the visualization",
-                    "Type": "cumulative or usual",
-                    "Grouping": "weekly, bi-weekly or monthly"
+                    "startDate": "",
+                    "endDate": "",
+                    "Type": Type,
+                    "Grouping": Grouping
                 },
                 "Attributes" : {
 
-                    "asin": "1",
-                    "brand": "2",
-                    "id":"3",
-                    "source":"4",
-                    "stars": "5"
+                    "asin": queries.all_asins(),
+                    "brand": queries.all_brands(),
+                    "source": queries.all_sources(),
+                    "stars": queries.all_stars()
                 }
             }
     
@@ -34,8 +38,6 @@ def get_info():
 
     return {'info': info}
 
-
-#@app.route("/api/timeline/startDate=<startDate>&endDate=<endDate>&Type=<Type>&Grouping=<Grouping>&attr=<attr>")
 @app.route('/api/timeline', methods=['GET'])
 def get_timeline():
     
@@ -43,10 +45,10 @@ def get_timeline():
     endDate = request.args.get('endDate')
     Type = request.args.get('Type',)
     Grouping = request.args.get('Grouping')
-    attr1 = request.args.get('attr1')
-    attr2 = request.args.get('attr2')
-    attr3 = request.args.get('attr3')
-    attr4 = request.args.get('attr4')
+    attr1 = request.args.get('asin')
+    attr2 = request.args.get('brand')
+    attr4 = request.args.get('source')
+    attr4 = request.args.get('stars')
 
     #return_data(startDate, endDate, Type, Grouping, attr)
 
