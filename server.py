@@ -47,10 +47,11 @@ def get_timeline():
     Grouping = request.args.get('Grouping')
     attr1 = request.args.get('asin')
     attr2 = request.args.get('brand')
-    attr4 = request.args.get('source')
+    attr3 = request.args.get('source')
     attr4 = request.args.get('stars')
 
-    #return_data(startDate, endDate, Type, Grouping, attr)
+    return queries.get_data(startDate=startDate, endDate=endDate, Type=Type, grp=Grouping, att1=attr1, att2=attr2, att3=attr3, att4=attr4)
+
 
 
 if __name__ == "__main__" :
