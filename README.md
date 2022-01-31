@@ -1,8 +1,8 @@
-# API timeline
+## API timeline
 
 This project creates an API to provide data for visualization
 
-## Technologies
+#### Technologies
 
 * Python 3.8.10
 * Flask
@@ -10,7 +10,7 @@ This project creates an API to provide data for visualization
 * Marshmallow
 * Pytest
 
-## Setup
+#### Setup
 
 To install all packages required to run the project, run the following command:
 
@@ -24,4 +24,4 @@ To run this project, run from the parent folder:
 ```
 $ run flask
 
-``
+```
