@@ -1,4 +1,4 @@
-## timeline API
+## Timeline API
 
 This project creates an API that provides data for visualization. The API receives parameters through the URL and uses them to retrieve information from a database with the parameters used as filters. The response from the API is a json with the data.
 
