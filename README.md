@@ -10,12 +10,12 @@ This project creates an API that provides data for visualization. The API receiv
 * Marshmallow
 * Pytest
 
-#### Setup
+#### Setup LINUX
 
 To install all packages required to run the project, run the following command:
 
 ```
-$ pip install -e . 
+$ pip install -r requirements.txt
 
 ```
 

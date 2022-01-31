@@ -4,8 +4,4 @@ flake8
 marshmallow
 pandas
 datetime
-os
-grp
 flask
-sqlite3
-json
