@@ -25,3 +25,15 @@ To run this project, run from the parent folder:
 $ flask run
 
 ```
+
+## Routes
+
+The API have two endpoints:
+
+### /api/info
+
+It shows information about possible filtering (list of attributes and list of values retrieved from the database)
+
+### /api/timeline
+
+This endpoint shows the data retrieved from the database according to the parameters parsed from the URL. The parameters are validated by Marshmallow library and none of the parameters are set as required. In case no parameters are passed, the API returns all data stored in database grouped by day.
