@@ -2,7 +2,7 @@ import sqlite3
 import pandas as pd
 from datetime import datetime
 
-df = pd.read_csv("/home/luana/Documentos/Simporter/SRC/data.csv", sep=';')
+df = pd.read_csv("data.csv", sep=';')
 df['timestamp'] = df['timestamp'].apply(lambda x: str(datetime.fromtimestamp(x)))
 df.sort_index(inplace=True)
 
