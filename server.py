@@ -1,11 +1,12 @@
 from crypt import methods
 from datetime import datetime
 from distutils.log import debug
+from xml.dom import ValidationErr
 from flask import Flask, request
 import pandas as pd
 import json
 import BD.queries as queries
-
+import SRC.query_params as query_params
 
 Type = ['cumulative', 'usual']
 Grouping = ['weekly', 'bi-weekly', 'monthly']
@@ -41,18 +42,18 @@ def get_info():
 @app.route('/api/timeline', methods=['GET'])
 def get_timeline():
     
-    startDate = request.args.get("startDate")
-    endDate = request.args.get('endDate')
-    Type = request.args.get('Type',)
-    Grouping = request.args.get('Grouping')
-    attr1 = request.args.get('asin')
-    attr2 = request.args.get('brand')
-    attr3 = request.args.get('source')
-    attr4 = request.args.get('stars')
+    try:
 
-    return queries.get_data(startDate=startDate, endDate=endDate, Type=Type, grp=Grouping, att1=attr1, att2=attr2, att3=attr3, att4=attr4)
+        schema = query_params.ParametersSchema()
+        prs = query_params.Parameters(request)
+        return queries.get_data(startDate=prs.startDate, endDate=prs.endDate, Type=prs.Type, grp=prs.Grouping, att1=prs.attr1, att2=prs.attr2, att3=prs.attr3, att4=prs.attr4)
 
-
-
+    except ValidationErr as err:
+        
+        return err
+    
 if __name__ == "__main__" :
     app.run(debug = True)
+
+
+

@@ -59,7 +59,14 @@ def get_data(startDate=None, endDate=None, Type=None, grp=None, att1=None, att2=
 
     def get_condition():
 
-        condition = "WHERE " if any(attrs.values()) else ""
+        if ((any(attrs.values())) | (startDate != None) | (endDate != None)):
+
+            condition = "WHERE "
+        else:
+            condition = ""
+
+        #condition = "WHERE " if any(attrs.values()) else ""
+
         rest = ""
         for att, value in attrs.items():
         
@@ -71,11 +78,19 @@ def get_data(startDate=None, endDate=None, Type=None, grp=None, att1=None, att2=
 
         if startDate != None:
 
-            rest+= "AND date(timestamp) >= '" + startDate + "' "
+            if any(attrs.values()) :
+
+                rest+= "AND "
+
+            rest+= "date(timestamp) >= '" + startDate + "' "
 
         if endDate != None:
 
-            rest+= " AND date(timestamp) <= '" + endDate + "' "
+            if any(attrs.values()) :
+
+                rest+= "AND "
+
+            rest+= "date(timestamp) <= '" + endDate + "' "
 
         return (condition + rest)
 
