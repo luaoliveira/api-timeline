@@ -10,7 +10,9 @@ database = sqlite3.connect('data.db')
 
 cursor = database.cursor()
 
-cursor.execute("CREATE TABLE sales(asin text,brand text,id text,source text,stars integer,timestamp text)")
+cursor.execute("CREATE TABLE sales(asin text, \
+                brand text,id text,source text, \
+                stars integer,timestamp text)")
 
 for index, row in df.iterrows():
 
@@ -21,6 +23,7 @@ for index, row in df.iterrows():
     stars = row['stars']
     timestamp = row['timestamp']
 
-    cursor.execute("INSERT INTO sales VALUES(?,?,?,?,?,?)", (asin,brand, id, source, stars, timestamp))
-
+    cursor.execute("INSERT INTO sales VALUES(?,?,?,?,?,?)", 
+                    (asin,brand, id, source, stars, timestamp))
+                    
     database.commit()

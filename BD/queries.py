@@ -1,8 +1,7 @@
+from datetime import datetime
 import os
-import grp
 from flask import Flask, request
 import sqlite3
-from datetime import datetime
 import json 
 import pandas as pd
 
@@ -33,72 +32,77 @@ def all_stars():
     cursor.execute("SELECT DISTINCT stars FROM sales ORDER BY stars")
     return [stars[0] for stars in cursor.fetchall()]
 
-def get_data(startDate=None, endDate=None, Type=None, grp=None, att1=None, att2=None, att3=None, att4=None):
+def get_data(startDate=None, endDate=None, Type=None,
+             grp=None, att1=None, att2=None, att3=None,
+             att4=None):
 
     database = connect()
 
     options_type = {
+
         'weekly': '%W',
         'monthly': '%m',
         'bi-weekly': '%W'
     }
 
     attrs = {
-        'asin': att1,
+
+        'asin':att1,
         'brand':att2,
         'source':att3,
-        'stars': att4
+        'stars':att4
     }
 
     grp_options = {
 
-        'weekly': 'W',
-        'bi-weekly': '2W',
-        'monthly' : 'M',
+        'weekly':'W',
+        'bi-weekly':'2W',
+        'monthly':'M',
     }
 
     def get_condition():
 
-        if ((any(attrs.values())) | (startDate != None) | (endDate != None)):
+        if ((any(attrs.values())) 
+            | (startDate != None) 
+            | (endDate != None)):
 
             condition = "WHERE "
+
         else:
+
             condition = ""
 
-        #condition = "WHERE " if any(attrs.values()) else ""
-
         rest = ""
-        for att, value in attrs.items():
-        
-            if value != None:
 
+        for att, value in attrs.items():
+            if value != None:
                 if (rest):
                     rest+= "AND "
-                rest+= att + " = '" + value + "' "
+                rest+= att + " = '" + str(value) + "' "
 
         if startDate != None:
-
-            if any(attrs.values()) :
-
+            if any(attrs.values()):
                 rest+= "AND "
-
             rest+= "date(timestamp) >= '" + startDate + "' "
 
         if endDate != None:
-
             if any(attrs.values()) :
-
                 rest+= "AND "
 
             rest+= "date(timestamp) <= '" + endDate + "' "
 
         return (condition + rest)
 
-    df = pd.read_sql_query("SELECT * FROM sales " + get_condition() + " ORDER BY date(timestamp)", database)
+    df = pd.read_sql_query(
+            "SELECT * FROM sales " 
+            + get_condition() 
+            + " ORDER BY date(timestamp)",
+            database)
 
     df['timestamp'] = pd.to_datetime(df['timestamp'])
 
     if grp != None:
+
         df = df.resample(grp_options[grp], on='timestamp').count()['stars']
     else:
         df = df.resample('1D', on='timestamp').count()['stars']
@@ -108,11 +112,8 @@ def get_data(startDate=None, endDate=None, Type=None, grp=None, att1=None, att2=
         df = df.cumsum()
 
     timeline = {
+
         "timeline": [{'date': key, 'value': value} for key, value in zip(df.index, df)] 
     }
 
     return timeline
-
-#get_data(att2='Downy', att4 = '3', startDate='2020-01-01', endDate='2020-12-01' , grp = 'weekly')
-#get_data(att2='Downy', att4 = '3', grp = 'weekly')
-#get_data(grp='bi-weekly')

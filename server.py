@@ -1,10 +1,9 @@
-from crypt import methods
 from datetime import datetime
-from distutils.log import debug
 from xml.dom import ValidationErr
 from flask import Flask, request
 import pandas as pd
 import json
+from marshmallow import Schema, fields, pprint, post_load, ValidationError
 import BD.queries as queries
 import SRC.query_params as query_params
 
@@ -12,9 +11,8 @@ Type = ['cumulative', 'usual']
 Grouping = ['weekly', 'bi-weekly', 'monthly']
 
 info = [
-    
             {
-                "Parameters": {
+                "Parameters" : {
 
                     "startDate": "",
                     "endDate": "",
@@ -29,7 +27,7 @@ info = [
                     "stars": queries.all_stars()
                 }
             }
-    
+
         ]
 
 app = Flask(__name__)
@@ -45,14 +43,15 @@ def get_timeline():
     try:
 
         schema = query_params.ParametersSchema()
-        prs = query_params.Parameters(request)
-        return queries.get_data(startDate=prs.startDate, endDate=prs.endDate, Type=prs.Type, grp=prs.Grouping, att1=prs.attr1, att2=prs.attr2, att3=prs.attr3, att4=prs.attr4)
+        prs = schema.load(request.args)
+        return queries.get_data(startDate=prs.startDate, endDate=prs.endDate, Type=prs.Type, grp=prs.Grouping, att1=prs.asin, att2=prs.brand, att3=prs.source, att4=prs.stars)
 
     except ValidationErr as err:
         
-        return err
+        return print(err)
     
-if __name__ == "__main__" :
+if __name__ == "__main__":
+
     app.run(debug = True)
 
 

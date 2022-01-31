@@ -1,77 +1,79 @@
-from xml.dom import ValidationErr
 from marshmallow import Schema, fields, pprint, post_load, ValidationError, validates
-import BD.queries
+import BD.queries as queries
 import sys
 
 sys.path.append("..")
 
 class Parameters():
 
-    def __init__(self, request):
+    def __init__(self, args):
 
-        self.startDate = request.args.get("startDate")
-        self.endDate = request.args.get('endDate')
-        self.Type = request.args.get('Type',)
-        self.Grouping = request.args.get('Grouping')
-        self.attr1 = request.args.get('asin')
-        self.attr2 = request.args.get('brand')
-        self.attr3 = request.args.get('source')
-        self.attr4 = request.args.get('stars')
+        self.startDate = args.get("startDate")
+        self.endDate = args.get('endDate')
+        self.Type = args.get('Type',)
+        self.Grouping = args.get('Grouping')
+        self.asin = args.get('asin')
+        self.brand = args.get('brand')
+        self.source = args.get('source')
+        self.stars = args.get('stars')
 
 
 class ParametersSchema(Schema):
 
-    startDate = fields.Date('%Y-%m-%d')
-    endDate = fields.Date(format='%Y-%m-%d')
-    Type = fields.String()
-    Grouping = fields.String()
-    attr1 = fields.String()
-    attr2 = fields.String()
-    attr3 = fields.String()
-    attr4 = fields.Integer()
+    startDate = fields.Date('%Y-%m-%d', required = False, allow_none = True)
+    endDate = fields.Date(format='%Y-%m-%d', required = False, allow_none = True)
+    Type = fields.String(required = False, allow_none = True)
+    Grouping = fields.String(required = False, allow_none = True)
+    asin = fields.String(required = False, allow_none = True)
+    brand = fields.String(required = False, allow_none = True)
+    source = fields.String(required = False, allow_none = True)
+    stars = fields.Integer(required = False, allow_none = True)
+
+    @post_load
+    def create_parameters(self, data, **kwargs):
+
+        return Parameters(data)
 
     @validates('Type')
     def validate_Type(self, Type):
 
         Type_values = ['cumulative', 'usual']
+        if ((not Type in Type_values) & (Type != None)):
 
-        if not Type in Type_values:
-
-            return ValidationError()
+            raise ValidationError()
 
     @validates('Grouping')
     def validate_Grouping(self, Grouping):
 
         Groups = ['weekly', 'bi-weekly', 'monthly']
-
-        if not Grouping in Groups:
+        if not((Grouping in Groups) & (Grouping != None)):
             
-            return ValidationError()
+            raise ValidationError("Not a valid grouping argument")
 
-    @validates('attr1')
-    def validade_attr1(self, attr1):
+    @validates('asin')
+    def validade_asin(self, asin):
 
-        if not attr1 in queries.all_asins():
+        if ((not asin in queries.all_asins()) & (asin != None)):
 
-            return ValidationError()
+            raise ValidationError("Asin not valid")
 
-    @validates('attr2')
-    def validate_attr2(self, attr2):
+    @validates('brand')
+    def validate_brand(self, brand):
 
-        if not attr2 in queries.all_brands():
+        if ((not brand in queries.all_brands()) & (brand != None)):
 
-            return ValidationError()
+            raise ValidationError("Brand not valid")
 
-    @validates('attr3')
-    def validate_attr3(self, attr3):
+    @validates('source')
+    def validate_source(self, source):
 
-        if not attr3 in queries.all_sources():
+        if ((not source in queries.all_sources()) & (source != None)):
 
-            return ValidationError()
+            raise ValidationError("Source not valid")
 
-    @validates('attr4')
-    def validate_attr4(self, attr4):
+    @validates('stars')
+    def validate_stars(self, stars):
 
-        if ((attr4 > 5) | (attr4 <1)):
+        if ((stars > 5) | (stars <1) and (stars != None)):
 
-            return ValidationError()
+            raise ValidationError("Stars must be in range 1-5")
