@@ -15,13 +15,13 @@ This project creates an API that provides data for visualization. The API receiv
 To install all packages required to run the project, run the following command:
 
 ```
-$ pip install -r requirements.txt
+$ pip install -e .
 
 ```
 
 To run this project, run from the parent folder:
 
 ```
-$ run flask
+$ flask run
 
 ```
