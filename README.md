@@ -37,3 +37,7 @@ It shows information about possible filtering (list of attributes and list of va
 #### /api/timeline
 
 This endpoint shows the data retrieved from the database according to the parameters parsed from the URL. The parameters are validated by Marshmallow library and none of the parameters are set as required. In case no parameters are passed, the API returns all data stored in database grouped by day.
+
+### Details
+
+The file [createbd.py](BD/createbd.py) creates a sqlite database ([data.db](BD/data.db)) from the file [data.csv](BD/data.csv).
